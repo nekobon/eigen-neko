@@ -1,10 +1,5 @@
 #%%
 from __future__ import annotations
-import os
-
-ROOT_DIR = Path("~/src/eigen-neko").expanduser()
-os.chdir(ROOT_DIR)
-
 from pathlib import Path
 
 from matplotlib import pyplot as plt
@@ -19,7 +14,7 @@ def show_image(path: Path):
 def get_output_path(path: Path, output_subdir=None, suffix=""):
     assert path.parts[-3] == "input"
     input_subdir = path.parts[-2]
-    output_dir = utils.OUTPUT_PATH
+    output_dir = utils.Paths.OUTPUT_PATH
     if output_subdir:
         output_dir = output_dir / output_subdir
     output_dir = output_dir / input_subdir
@@ -30,9 +25,9 @@ def get_output_path(path: Path, output_subdir=None, suffix=""):
 
 
 ## MAIN ##
-files = utils.gen_files()
+files = utils.Paths.gen_files()
 for i in range(100):
-    file: utils.AnnotatedImage = next(files)
+    file = next(files)
     face = file.extract_face(margin_x_min=10, margin_x_max=10, margin_y_max=20)
     outpath = get_output_path(file.image, output_subdir="extracted_faces_small_margin")
     plt.imsave(outpath, face)

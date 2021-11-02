@@ -5,10 +5,34 @@ import typing as tp
 from matplotlib import pyplot as plt
 from matplotlib import image as mpl_image
 
-ROOT_DIR = Path("~/src/eigen-neko").expanduser()
-os.chdir(ROOT_DIR)
-INPUT_PATH = ROOT_DIR / "input"
-OUTPUT_PATH = ROOT_DIR / "output"
+from core import config
+
+
+class Paths:
+    ROOT_DIR = Path(config.ROOT_DIR).expanduser()
+    INPUT_PATH = ROOT_DIR / "input"
+    OUTPUT_PATH = ROOT_DIR / "output"
+
+    @classmethod
+    def gen_files(
+        cls,
+        input_path: PathSpecifier = INPUT_PATH,
+    ) -> tp.Iterator[AnnotatedImage]:
+        """
+        Args:
+            Dataset directory
+
+        Returns:
+            Iterator of AnnotatedImages (image_path, points) pairs
+        """
+        for dirname, _, filenames in os.walk(input_path):
+            for filename in filenames:
+                path = Path(dirname, filename)
+                if path.suffix == ".jpg":
+                    yield AnnotatedImage.from_paths(
+                        image=path, annotation=path.with_suffix(".jpg.cat")
+                    )
+
 
 PathSpecifier = tp.Union[str, Path]
 
@@ -70,13 +94,3 @@ def parse_image(path: Path):
     # top -> bottom - x
     # left -> right - y
     return mpl_image.imread(path)
-
-
-def gen_files(input_path: PathSpecifier = INPUT_PATH) -> tp.Iterator[AnnotatedImage]:
-    for dirname, _, filenames in os.walk(input_path):
-        for filename in filenames:
-            path = Path(dirname, filename)
-            if path.suffix == ".jpg":
-                yield AnnotatedImage.from_paths(
-                    image=path, annotation=path.with_suffix(".jpg.cat")
-                )
