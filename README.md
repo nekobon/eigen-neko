@@ -7,3 +7,4 @@
 - create a new virtual-env. example: `python -m venv ~/.env-eigeneko` and activate (`. <myvenvdir/bin/activate>`).
 - pip install -r requirements.txt
 - from the repository, run `pwd > <myvenvdir>/lib/python3.8/site-packages/eigeneko.pth` (Now in IPython, when running `import sys; sys.path`, the repository directory should appear.)
+- `cp core/config.py.template core/config.py` and adjust values there
