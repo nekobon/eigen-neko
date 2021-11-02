@@ -2,6 +2,8 @@ from __future__ import annotations
 from pathlib import Path
 import os
 import typing as tp
+
+import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import image as mpl_image
 
@@ -57,6 +59,11 @@ class Point(tp.NamedTuple):
             slice(max(0, min_x - margin_x_min), max_x + margin_x_max),
             slice(max(0, min_y - margin_y_min), max_y + margin_y_max),
         )
+
+    @staticmethod
+    def to_np(points: tp.Sequence[Point]) -> np.ndarray:
+        # first column x, second column y
+        return np.array(points)
 
 
 class AnnotatedImage(tp.NamedTuple):
