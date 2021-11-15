@@ -1,3 +1,5 @@
 /input/
 /output/
 .vscode/
+*.pyc
+config.py
