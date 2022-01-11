@@ -71,6 +71,10 @@ class AnnotatedImage(tp.NamedTuple):
     points: tp.Tuple[Point, ...]
 
     @classmethod
+    def from_image_path(cls, path: Path):
+        return cls.from_paths(image=path, annotation=path.with_suffix(".jpg.cat"))
+
+    @classmethod
     def from_paths(cls, annotation: Path, image: Path):
         num_points, *points = (int(x) for x in annotation.read_text().strip().split())
         assert num_points * 2 == len(points)
