@@ -15,7 +15,6 @@ from typing_extensions import Annotated
 from PIL import Image, ImageOps
 import numpy as np
 from matplotlib import pyplot as plt
-from sklearn import decomposition
 
 from core import utils
 
@@ -41,6 +40,7 @@ def plot_portraits(images, titles, shape, n_row, n_col):
         plt.title(titles[i])
         plt.xticks(())
         plt.yticks(())
+    plt.show()
 
 
 def gen_images(
