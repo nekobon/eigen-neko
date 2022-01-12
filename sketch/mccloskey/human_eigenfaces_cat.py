@@ -15,6 +15,7 @@ from typing_extensions import Annotated
 from PIL import Image, ImageOps
 import numpy as np
 from matplotlib import pyplot as plt
+import seaborn as sns
 
 from core import utils
 
@@ -116,6 +117,9 @@ pca_result = pca(X_train)
 eigenfaces = np.array([dilate_components(arr) for arr in pca_result.Vt])
 eigenface_titles = ["eigenface %d" % i for i in range(eigenfaces.shape[0])]
 plot_portraits(eigenfaces, eigenface_titles, shape, 4, 4)
+
+# %% Show S values:
+sns.scatterplot(x=range(1, len(pca_result.S) + 1), y=pca_result.S)
 
 # %%
 # Add progressive compoents
