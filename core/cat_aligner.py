@@ -29,6 +29,30 @@ def _show_cat_and_points(cat: AnnotatedImage) -> None:
     plt.imshow(cat_img)
 
 
+def stack_images(images: tp.Sequence["Image"]):
+    """assumes all same size"""
+    w, h = images[0].size
+    rt = np.sqrt(len(images))
+    n_col = int(rt)
+    n_row = int(n_col + int((rt - n_col) > 0))
+
+    new_img = Image.new("RGB", (n_col * w, n_row * h))
+
+    x_offset = 0
+    y_offset = 0
+    for i, img in enumerate(images):
+        new_img.paste(img, (x_offset, y_offset))
+
+        if (i + 1) % n_col:
+            x_offset += w
+        else:
+            x_offset = 0
+            y_offset += h
+        # print(x_offset, y_offset)
+
+    return new_img
+
+
 def truncate(
     img: Image,
     eye_points: tp.List[tp.List[int]],
@@ -55,7 +79,7 @@ def truncate(
     # cropped.show()
     # return cropped
     scaled = cropped.resize((width, height))
-    scaled.show()
+    # scaled.show()
     return scaled
 
 
@@ -106,7 +130,7 @@ class CatAlignerLSTSQ:
         print(f"{new_h=}")
         print(f"{min(1, w_ratio, h_ratio)=}")
 
-        return min(1, w_ratio, h_ratio) * 0.6
+        return min(1, w_ratio, h_ratio) * 0.5
 
     @staticmethod
     def get_new_eye_points(cat: AnnotatedImage, x: np.array, size_multiplier: float):
@@ -149,7 +173,7 @@ class CatAlignerLSTSQ:
         dst_x = (new_x * size_multiplier).astype(int)
         dst_y = (new_y * size_multiplier).astype(int)
 
-        eye_points = cls.get_new_eye_points(cat, x, size_multiplier)
+        eye_points = cls.get_new_eye_points(test_cat, x, size_multiplier)
         final_image = np.zeros([dst_x.max() + 1, dst_y.max() + 1, 3]).astype(int) + 255
         final_image[dst_x, dst_y] = test_cat_image[src_x, src_y]
 
@@ -158,7 +182,7 @@ class CatAlignerLSTSQ:
         return img, eye_points[:, [1, 0]].tolist()
 
 
-class CatAlignerPIL:
+class CatAlignerEyes:
     @staticmethod
     def get_eye_rot_angle_and_size(test_cat: AnnotatedImage):
         # only using eyes (1st and 2nd points)
@@ -195,20 +219,29 @@ class CatAlignerPIL:
         return rotated, new_eye_points
 
 
-gen = utils.Paths.gen_files()
-next(gen)
-next(gen)
-next(gen)
-next(gen)
-next(gen)
-next(gen)
-for cat in gen:
-    new_image, eyes = CatAlignerLSTSQ.transform(cat)
-    truncate(new_image, eyes, width=100, height=100)
+def gen_aligned(n: int, aligner: type):
+    gen = utils.Paths.gen_files()
+    for i, cat in enumerate(gen):
+        print(aligner, i)
+        if i == n:
+            return
+        new_image, eyes = aligner.transform(cat)
+        yield truncate(new_image, eyes, width=100, height=100)
 
     # plt.imshow(new_image)
     # img, points = Image.fromarray(new_image.astype(np.uint8))
-    show_image(cat.image)
-    plt.show()
-    continue
-    img.show()
+    # show_image(cat.image)
+    # plt.show()
+    # continue
+    # img.show()
+
+
+n = 64
+
+aligned_eyes = list(gen_aligned(n, aligner=CatAlignerEyes))
+img_eyes = stack_images(aligned_eyes)
+img_eyes.show()
+
+aligned_lstsq = list(gen_aligned(n, aligner=CatAlignerLSTSQ))
+img_lstsq = stack_images(aligned_lstsq)
+img_lstsq.show()
