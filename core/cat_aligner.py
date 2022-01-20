@@ -1,4 +1,5 @@
 from ipdb.__main__ import main
+import functools
 from core.utils import Path, AnnotatedImage
 import typing as tp
 import itertools
@@ -7,6 +8,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from numpy import linalg
 from PIL import Image
+import itertools
 
 
 def show_image(path: Path):
@@ -99,6 +101,13 @@ def truncate_by_all_points(
 
 class CatAligner:
     @classmethod
+    def align_one_image(
+        cls, cat: AnnotatedImage, width: int, height: int
+    ) -> Image.Image:
+        new_image, points = cls.transform(cat)
+        return cls.truncate(new_image, points, width=width, height=height)
+
+    @classmethod
     def gen_aligned(
         cls,
         n: int,
@@ -110,8 +119,29 @@ class CatAligner:
         for i, cat in enumerate(gen):
             if i == n:
                 return
-            new_image, points = cls.transform(cat)
-            yield cls.truncate(new_image, points, width=width, height=height)
+            print(i, cat.image)
+            yield cls.align_one_image(cat, width=width, height=height)
+
+    @classmethod
+    def gen_aligned_multiprocess(
+        cls,
+        n: int,
+        *,
+        width: int,
+        height: int,
+    ) -> tp.List[Image.Image]:
+        """multiprocess version of gen_aligned"""
+        from concurrent.futures import ProcessPoolExecutor
+
+        get_one_image = functools.partial(
+            cls.align_one_image, width=width, height=height
+        )
+
+        with ProcessPoolExecutor(max_workers=10) as executor:
+            yield from executor.map(
+                get_one_image,
+                itertools.islice(utils.Paths.gen_files(), n, None),
+            )
 
 
 class CatAlignerLSTSQ(CatAligner):
@@ -121,6 +151,7 @@ class CatAlignerLSTSQ(CatAligner):
     @staticmethod
     def get_standard_cat() -> AnnotatedImage:
         standard_cat_path = utils.Paths.INPUT_PATH / "CAT_00" / "00000055_003.jpg"
+        standard_cat_path = utils.Paths.INPUT_PATH / "CAT_04" / "00000949_015.jpg"
         return AnnotatedImage.from_image_path(standard_cat_path)
 
     @staticmethod
@@ -158,11 +189,6 @@ class CatAlignerLSTSQ(CatAligner):
         """we want to make the image smaller to avoid gaps in pixels"""
         w_ratio = src_w / new_w
         h_ratio = src_h / new_h
-        print(f"{src_w=}")
-        print(f"{new_w=}")
-        print(f"{src_h=}")
-        print(f"{new_h=}")
-        print(f"{min(1, w_ratio, h_ratio)=}")
 
         return min(1, w_ratio, h_ratio) * 0.5
 
@@ -275,19 +301,29 @@ class CatAlignerSimple(CatAligner):
     # continue
     # img.show()
 
+
 if __name__ == "__main__":
-    n = 25
+    n = 25  # number of cats
     w = 100  # width
     h = 100  # height
 
-    aligned = list(CatAlignerEyes.gen_aligned(n, width=w, height=h))
-    img = stack_images(aligned)
-    img.show()
+    # aligned = list(CatAlignerEyes.gen_aligned(n, width=w, height=h))
+    # img = stack_images(aligned)
+    # img.show()
 
-    aligned = list(CatAlignerSimple.gen_aligned(n, width=w, height=h))
-    img = stack_images(aligned)
-    img.show()
+    # aligned = list(CatAlignerSimple.gen_aligned(n, width=w, height=h))
+    # img = stack_images(aligned)
+    # img.show()
 
-    aligned = list(CatAlignerLSTSQ.gen_aligned(n, width=w, height=h))
-    img = stack_images(aligned)
-    img.show()
+    # aligned = list(CatAlignerLSTSQ.gen_aligned(n, width=w, height=h))
+    # img = stack_images(aligned)
+    # img.show()
+    import time
+
+    for aligner in (CatAlignerEyes, CatAlignerSimple, CatAlignerLSTSQ):
+        # for aligner in (CatAlignerSimple,):
+        i = time.time()
+        aligned = list(aligner.gen_aligned(n, width=w, height=h))
+        print(aligner, f"{time.time() - i}")
+        img = stack_images(aligned)
+        img.show()
