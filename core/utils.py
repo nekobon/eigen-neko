@@ -146,7 +146,7 @@ def plot_portraits(
     return fig
 
 
-def plot_principle_components(S: np.ndarray):
+def plot_principle_components(S: np.ndarray) -> figure.Figure:
     sns.scatterplot(x=range(1, len(S) + 1), y=S.cumsum() / S.sum())
     S_cum = S.cumsum() / S.sum()
     vline_y = [x / 10 for x in range(1, 10)]
@@ -167,3 +167,5 @@ def plot_principle_components(S: np.ndarray):
     )
     plt.hlines(y=vline_y, xmin=0, xmax=vline_x, colors="teal", ls="--", lw=2)
     plt.legend(bbox_to_anchor=(1, -0.15))
+
+    return plt.gcf()
