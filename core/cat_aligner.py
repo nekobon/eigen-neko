@@ -1,3 +1,4 @@
+from ipdb.__main__ import main
 from core.utils import Path, AnnotatedImage
 import typing as tp
 import itertools
@@ -274,19 +275,19 @@ class CatAlignerSimple(CatAligner):
     # continue
     # img.show()
 
+if __name__ == "__main__":
+    n = 25
+    w = 100  # width
+    h = 100  # height
 
-n = 25
-w = 100  # width
-h = 100  # height
+    aligned = list(CatAlignerEyes.gen_aligned(n, width=w, height=h))
+    img = stack_images(aligned)
+    img.show()
 
-aligned = list(CatAlignerEyes.gen_aligned(n, width=w, height=h))
-img = stack_images(aligned)
-img.show()
+    aligned = list(CatAlignerSimple.gen_aligned(n, width=w, height=h))
+    img = stack_images(aligned)
+    img.show()
 
-aligned = list(CatAlignerSimple.gen_aligned(n, width=w, height=h))
-img = stack_images(aligned)
-img.show()
-
-aligned = list(CatAlignerLSTSQ.gen_aligned(n, width=w, height=h))
-img = stack_images(aligned)
-img.show()
+    aligned = list(CatAlignerLSTSQ.gen_aligned(n, width=w, height=h))
+    img = stack_images(aligned)
+    img.show()
