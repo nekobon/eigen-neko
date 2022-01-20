@@ -1,11 +1,11 @@
-from core.utils import Path, AnnotatedImage
+from core.utils import Path, AnnotatedImage, Point
 import typing as tp
 import itertools
 from core import utils
 import numpy as np
 from matplotlib import pyplot as plt
 from numpy import linalg
-from PIL import Image
+from PIL import Image, ImageOps
 
 
 def show_image(path: Path):
@@ -59,7 +59,15 @@ def truncate(
     return scaled
 
 
-class CatAlignerLSTSQ:
+class CatAligner:
+    @classmethod
+    def transform(
+        cls, test_cat: AnnotatedImage, **kwargs
+    ) -> tp.Tuple[Image.Image, tp.List[tp.List[int]]]:
+        raise NotImplementedError("Must be implemented in a subclass")
+
+
+class CatAlignerLSTSQ(CatAligner):
     @staticmethod
     def get_standard_cat() -> AnnotatedImage:
         standard_cat_path = utils.Paths.INPUT_PATH / "CAT_00" / "00000055_003.jpg"
@@ -117,7 +125,7 @@ class CatAlignerLSTSQ:
     @classmethod
     def transform(
         cls, test_cat: AnnotatedImage
-    ) -> tp.Tuple["Image", tp.List[tp.List[int]]]:
+    ) -> tp.Tuple[Image.Image, tp.List[tp.List[int]]]:
 
         standard_cat = cls.get_standard_cat()
 
@@ -158,7 +166,7 @@ class CatAlignerLSTSQ:
         return img, eye_points[:, [1, 0]].tolist()
 
 
-class CatAlignerPIL:
+class CatAlignerPIL(CatAligner):
     @staticmethod
     def get_eye_rot_angle_and_size(test_cat: AnnotatedImage):
         # only using eyes (1st and 2nd points)
@@ -172,7 +180,7 @@ class CatAlignerPIL:
     @classmethod
     def transform(
         cls, test_cat: AnnotatedImage
-    ) -> tp.Tuple["Image", tp.List[tp.List[int]]]:
+    ) -> tp.Tuple[Image.Image, tp.List[tp.List[int]]]:
 
         img = Image.open(test_cat.image)
         angle_rad, eye_w = cls.get_eye_rot_angle_and_size(test_cat)
@@ -195,20 +203,46 @@ class CatAlignerPIL:
         return rotated, new_eye_points
 
 
-gen = utils.Paths.gen_files()
-next(gen)
-next(gen)
-next(gen)
-next(gen)
-next(gen)
-next(gen)
-for cat in gen:
-    new_image, eyes = CatAlignerLSTSQ.transform(cat)
-    truncate(new_image, eyes, width=100, height=100)
+class CatAlignerCropOnly(CatAligner):
+    @staticmethod
+    def transform(
+        test_cat: AnnotatedImage,
+        output_shape=(64, 64),
+        gray=True,
+        crop=True,
+    ) -> tp.Tuple[Image.Image, tp.List[tp.List[int]]]:
+        image = Image.open(test_cat.image)
+        eyes = test_cat.points[:2]
 
-    # plt.imshow(new_image)
-    # img, points = Image.fromarray(new_image.astype(np.uint8))
-    show_image(cat.image)
-    plt.show()
-    continue
-    img.show()
+        if gray:
+            image = ImageOps.grayscale(image)
+
+        if crop:
+            min_pt, max_pt = utils.Point.to_min_max(test_cat.points)
+            image = image.crop((min_pt.x, min_pt.y, max_pt.x, max_pt.y))
+            eyes = [pt - min_pt for pt in eyes]
+
+        if output_shape:
+            image = image.resize(output_shape)
+
+        return image, eyes
+
+
+if __name__ == "__main__":
+    gen = utils.Paths.gen_files()
+    next(gen)
+    next(gen)
+    next(gen)
+    next(gen)
+    next(gen)
+    next(gen)
+    for cat in gen:
+        new_image, eyes = CatAlignerLSTSQ.transform(cat)
+        truncate(new_image, eyes, width=100, height=100)
+
+        # plt.imshow(new_image)
+        # img, points = Image.fromarray(new_image.astype(np.uint8))
+        show_image(cat.image)
+        plt.show()
+        continue
+        img.show()
