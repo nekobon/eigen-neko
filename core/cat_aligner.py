@@ -53,9 +53,10 @@ def stack_images(images: tp.Sequence["Image"]):
     return new_img
 
 
-def truncate(
+def truncate_by_eyes(
     img: Image,
-    eye_points: tp.List[tp.List[int]],
+    points: tp.List[tp.List[int]],
+    *,
     width: int,
     height: int,
 ) -> Image:
@@ -63,7 +64,7 @@ def truncate(
     eye_w_to_half_width = 1.3
     eye_height = 0.8  # 0 = at bototm, 1 = at middle, 2 = at top
 
-    left, right = eye_points
+    left, right = points[:2]
     mid_eye_x = (left[0] + right[0]) / 2
     mid_eye_y = (left[1] + right[1]) / 2
     eye_w = right[0] - left[0]
@@ -83,7 +84,39 @@ def truncate(
     return scaled
 
 
-class CatAlignerLSTSQ:
+def truncate_by_all_points(
+    img: Image,
+    points: tp.List[tp.List[int]],
+    *,
+    width: int,
+    height: int,
+) -> Image:
+    xs, ys = zip(*points)
+    cropped = img.crop((min(xs), min(ys), max(xs), max(ys)))
+    return cropped.resize((width, height))
+
+
+class CatAligner:
+    @classmethod
+    def gen_aligned(
+        cls,
+        n: int,
+        *,
+        width: int,
+        height: int,
+    ) -> tp.Iterator[Image.Image]:
+        gen = utils.Paths.gen_files()
+        for i, cat in enumerate(gen):
+            if i == n:
+                return
+            new_image, points = cls.transform(cat)
+            yield cls.truncate(new_image, points, width=width, height=height)
+
+
+class CatAlignerLSTSQ(CatAligner):
+
+    truncate = staticmethod(truncate_by_eyes)
+
     @staticmethod
     def get_standard_cat() -> AnnotatedImage:
         standard_cat_path = utils.Paths.INPUT_PATH / "CAT_00" / "00000055_003.jpg"
@@ -141,7 +174,7 @@ class CatAlignerLSTSQ:
     @classmethod
     def transform(
         cls, test_cat: AnnotatedImage
-    ) -> tp.Tuple["Image", tp.List[tp.List[int]]]:
+    ) -> tp.Tuple[Image.Image, tp.List[tp.List[int]]]:
 
         standard_cat = cls.get_standard_cat()
 
@@ -174,7 +207,7 @@ class CatAlignerLSTSQ:
         dst_y = (new_y * size_multiplier).astype(int)
 
         eye_points = cls.get_new_eye_points(test_cat, x, size_multiplier)
-        final_image = np.zeros([dst_x.max() + 1, dst_y.max() + 1, 3]).astype(int) + 255
+        final_image = np.zeros([dst_x.max() + 1, dst_y.max() + 1, 3]).astype(int)
         final_image[dst_x, dst_y] = test_cat_image[src_x, src_y]
 
         img = Image.fromarray(final_image.astype(np.uint8))
@@ -182,9 +215,12 @@ class CatAlignerLSTSQ:
         return img, eye_points[:, [1, 0]].tolist()
 
 
-class CatAlignerEyes:
+class CatAlignerEyes(CatAligner):
+
+    truncate = staticmethod(truncate_by_eyes)
+
     @staticmethod
-    def get_eye_rot_angle_and_size(test_cat: AnnotatedImage):
+    def get_eye_rot_angle_and_size(test_cat: AnnotatedImage) -> tp.Tuple[float, float]:
         # only using eyes (1st and 2nd points)
         p = test_cat.points  # list of (x, y) points
         x = p[1][0] - p[0][0]  # y distance between two eyes
@@ -196,7 +232,7 @@ class CatAlignerEyes:
     @classmethod
     def transform(
         cls, test_cat: AnnotatedImage
-    ) -> tp.Tuple["Image", tp.List[tp.List[int]]]:
+    ) -> tp.Tuple[Image.Image, tp.List[tp.List[int]]]:
 
         img = Image.open(test_cat.image)
         angle_rad, eye_w = cls.get_eye_rot_angle_and_size(test_cat)
@@ -219,14 +255,17 @@ class CatAlignerEyes:
         return rotated, new_eye_points
 
 
-def gen_aligned(n: int, aligner: type):
-    gen = utils.Paths.gen_files()
-    for i, cat in enumerate(gen):
-        print(aligner, i)
-        if i == n:
-            return
-        new_image, eyes = aligner.transform(cat)
-        yield truncate(new_image, eyes, width=100, height=100)
+class CatAlignerSimple(CatAligner):
+    truncate = staticmethod(truncate_by_all_points)
+
+    @classmethod
+    def transform(
+        cls, test_cat: AnnotatedImage
+    ) -> tp.Tuple[Image.Image, tp.List[tp.List[int]]]:
+
+        img = Image.open(test_cat.image)
+
+        return img, test_cat.points
 
     # plt.imshow(new_image)
     # img, points = Image.fromarray(new_image.astype(np.uint8))
@@ -236,12 +275,18 @@ def gen_aligned(n: int, aligner: type):
     # img.show()
 
 
-n = 64
+n = 25
+w = 100  # width
+h = 100  # height
 
-aligned_eyes = list(gen_aligned(n, aligner=CatAlignerEyes))
-img_eyes = stack_images(aligned_eyes)
-img_eyes.show()
+aligned = list(CatAlignerEyes.gen_aligned(n, width=w, height=h))
+img = stack_images(aligned)
+img.show()
 
-aligned_lstsq = list(gen_aligned(n, aligner=CatAlignerLSTSQ))
-img_lstsq = stack_images(aligned_lstsq)
-img_lstsq.show()
+aligned = list(CatAlignerSimple.gen_aligned(n, width=w, height=h))
+img = stack_images(aligned)
+img.show()
+
+aligned = list(CatAlignerLSTSQ.gen_aligned(n, width=w, height=h))
+img = stack_images(aligned)
+img.show()
