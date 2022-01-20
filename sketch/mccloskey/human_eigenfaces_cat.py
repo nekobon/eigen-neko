@@ -83,14 +83,13 @@ def pca_from_components(pca_result: PCAResult, key_or_slice: int | slice):
 
 def dilate_components(arr: np.ndarray) -> np.ndarray:
     ret = arr.copy()
-    ret -= ret.min()
-    ret /= ret.max()
+    ret = ret - ret.min()
+    ret = ret / ret.max()
     return ret
 
 
 def reconstruction(pca_result: PCAResult, shape, image_index, n_pc):
     components = pca_result.Vt[:n_pc]
-    n_samples, n_features = pca_result.centered_data.shape
     weights = np.dot(pca_result.centered_data, components)
     centered_vector = np.dot(weights[image_index, :], components)
     recovered_image = (pca_result.mean + centered_vector).reshape(shape)
@@ -119,7 +118,9 @@ eigenface_titles = ["eigenface %d" % i for i in range(eigenfaces.shape[0])]
 plot_portraits(eigenfaces, eigenface_titles, shape, 4, 4)
 
 # %% Show S values:
-sns.scatterplot(x=range(1, len(pca_result.S) + 1), y=pca_result.S)
+sns.scatterplot(
+    x=range(1, len(pca_result.S) + 1), y=pca_result.S.cumsum() / pca_result.S.sum()
+)
 
 # %%
 # Add progressive compoents
