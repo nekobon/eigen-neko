@@ -6,6 +6,8 @@ import typing as tp
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import image as mpl_image
+from matplotlib import figure
+import seaborn as sns
 
 from core import config
 
@@ -65,6 +67,12 @@ class Point(tp.NamedTuple):
         # first column x, second column y
         return np.array(points)
 
+    def __sub__(self, other: tp.Any) -> Point:
+        if not isinstance(other, Point):
+            return NotImplemented
+
+        return Point(x=self.x - other.x, y=self.y - other.y)
+
 
 class AnnotatedImage(tp.NamedTuple):
     image: Path
@@ -106,3 +114,59 @@ def parse_image(path: Path):
     # top -> bottom - x
     # left -> right - y
     return mpl_image.imread(path)
+
+
+def plot_image(
+    image_arr,
+    shape,
+    axis: plt.Axes = None,
+    title="",
+):
+    axis = plt if axis is None else axis
+
+    axis.imshow(image_arr.reshape(shape), cmap="gray")
+    plt.title(title)
+    plt.xticks(())
+    plt.yticks(())
+
+
+def plot_portraits(
+    images, shape, n_row, n_col, titles=None, suptitle=None, show=True
+) -> figure.Figure:
+    titles = [""] * n_row * n_col if titles is None else titles
+    fig = plt.figure(figsize=(2.2 * n_col, 2.2 * n_row))
+    plt.subplots_adjust(bottom=0, left=0.01, right=0.99, top=0.90, hspace=0.20)
+    for i in range(n_row * n_col):
+        axis = plt.subplot(n_row, n_col, i + 1)
+        plot_image(images[i], shape, axis, titles[i])
+    if suptitle:
+        plt.suptitle(suptitle)
+    if show:
+        plt.show()
+
+    return fig
+
+
+def plot_principle_components(S: np.ndarray) -> figure.Figure:
+    sns.scatterplot(x=range(1, len(S) + 1), y=S.cumsum() / S.sum())
+    S_cum = S.cumsum() / S.sum()
+    vline_y = [x / 10 for x in range(1, 10)]
+    vline_x = [np.searchsorted(S_cum, x) for x in vline_y]
+    plt.ylim(0, 1)
+    plt.xlim(0, len(S))
+    plt.xlabel("Num Components")
+    plt.ylabel("Cumulative Sum")
+    plt.title("Component Descriptive Power")
+    plt.vlines(
+        x=vline_x,
+        ymin=0,
+        ymax=vline_y,
+        colors="teal",
+        ls="--",
+        lw=2,
+        label="Number of Components for each decile",
+    )
+    plt.hlines(y=vline_y, xmin=0, xmax=vline_x, colors="teal", ls="--", lw=2)
+    plt.legend(bbox_to_anchor=(1, -0.15))
+
+    return plt.gcf()
