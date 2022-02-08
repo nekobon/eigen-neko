@@ -1,5 +1,4 @@
-from core.utils import Path, AnnotatedImage, Point
-from ipdb.__main__ import main
+from core.utils import Path, AnnotatedImage
 import functools
 from core.utils import Path, AnnotatedImage
 import typing as tp
@@ -8,7 +7,7 @@ from core import utils
 import numpy as np
 from matplotlib import pyplot as plt
 from numpy import linalg
-from PIL import Image, ImageOps
+from PIL import Image
 from PIL import Image
 import itertools
 
@@ -34,7 +33,7 @@ def _show_cat_and_points(cat: AnnotatedImage) -> None:
     plt.imshow(cat_img)
 
 
-def stack_images(images: tp.Sequence["Image"]):
+def stack_images(images: tp.Sequence[Image.Image]):
     """assumes all same size"""
     w, h = images[0].size
     rt = np.sqrt(len(images))
@@ -59,12 +58,12 @@ def stack_images(images: tp.Sequence["Image"]):
 
 
 def truncate_by_eyes(
-    img: Image,
+    img: Image.Image,
     points: tp.List[tp.List[int]],
     *,
     width: int,
     height: int,
-) -> Image:
+) -> Image.Image:
     eye_w_to_half_height = 1.3 * height / width
     eye_w_to_half_width = 1.3
     eye_height = 0.8  # 0 = at bototm, 1 = at middle, 2 = at top
@@ -90,12 +89,12 @@ def truncate_by_eyes(
 
 
 def truncate_by_all_points(
-    img: Image,
+    img: Image.Image,
     points: tp.List[tp.List[int]],
     *,
     width: int,
     height: int,
-) -> Image:
+) -> Image.Image:
     xs, ys = zip(*points)
     cropped = img.crop((min(xs), min(ys), max(xs), max(ys)))
     return cropped.resize((width, height))
