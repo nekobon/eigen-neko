@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import functools
 import itertools
 import typing as tp
@@ -100,6 +102,22 @@ def truncate_by_all_points(
 
 
 class CatAligner:
+    @staticmethod
+    def truncate(
+        img: Image.Image,
+        points: tp.List[tp.List[int]],
+        *,
+        width: int,
+        height: int,
+    ) -> Image.Image:
+        raise NotImplementedError()
+
+    @classmethod
+    def transform(
+        cls, test_cat: AnnotatedImage
+    ) -> tp.Tuple[Image.Image, tp.List[tp.List[int]]]:
+        raise NotImplementedError()
+
     @classmethod
     def align_one_image(
         cls, cat: AnnotatedImage, width: int, height: int

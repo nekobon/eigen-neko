@@ -7,6 +7,8 @@ import numpy as np
 
 from core import cat_aligner, config, utils
 
+from PIL import ImageOps
+
 
 def dilate_components(arr: np.ndarray) -> np.ndarray:
     ret = arr.copy()
@@ -15,15 +17,20 @@ def dilate_components(arr: np.ndarray) -> np.ndarray:
     return ret
 
 
-def main():
-    N_SAMPLES = 100
-    ALIGNER: cat_aligner.CatAligner = cat_aligner.CatAlignerCropOnly
-    out_folder = Path(os.path.expanduser(config.ROOT_DIR), "output", "gif_temp")
-    out_folder.mkdir(exist_ok=True, parents=True)
+# NOTE: Images are not getting made appropriately. Also
+# /home/mccloskey/src/eigen-neko/core/utils.py:138: RuntimeWarning: More than 20 figures have been opened.
+# Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly
+# closed and may consume too much memory. (To control this warning, see the rcParam `figure.max_open_warning`).
+# fig = plt.figure(figsize=(2.2 * n_col, 2.2 * n_row))
+
+
+def main(*, aligner: cat_aligner.CatAligner, n_samples: int, out_folder: Path):
+    out_folder.mkdir(parents=True, exist_ok=True)
+    print(f"Outputting to {out_folder}")
 
     all_files = list(utils.Paths.gen_files())
-    files = all_files[:N_SAMPLES]
-    images, _ = zip(*[ALIGNER.transform(f) for f in files])
+    files = all_files[:n_samples]
+    images = [ImageOps.grayscale(aligner.align_one_image(f, 64, 64)) for f in files]
     names = [f.image.stem for f in files]
     shape = np.array(images[0]).shape
 
@@ -49,7 +56,7 @@ def main():
         return (principle_compoents @ principle_directions) + X_mean
 
     gif_folder = out_folder / "gif_subimages"
-    gif_folder.mkdir()
+    gif_folder.mkdir(exist_ok=True)
 
     S_cum = S.cumsum() / S.sum()
 
