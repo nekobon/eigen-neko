@@ -92,21 +92,22 @@ class AnnotatedImage(tp.NamedTuple):
             points=points,
         )
 
-    def extract_face(
-        self, margin_x_min=0, margin_y_min=0, margin_x_max=0, margin_y_max=0
-    ):
-        vector = parse_image(self.image)
-        min_pt, max_pt = Point.to_min_max(self.points)
-        slice_x, slice_y = Point.box_slice(
-            min_pt,
-            max_pt,
-            margin_x_min=margin_x_min,
-            margin_y_min=margin_y_min,
-            margin_x_max=margin_x_max,
-            margin_y_max=margin_y_max,
-        )
-        # vector has inverted x y
-        return vector[slice_y, slice_x]
+    # similar functionality in cat_aligner.CatAligner.truncate_by_all_points
+    # def extract_face(
+    #     self, margin_x_min=0, margin_y_min=0, margin_x_max=0, margin_y_max=0
+    # ):
+    #     vector = parse_image(self.image)
+    #     min_pt, max_pt = Point.to_min_max(self.points)
+    #     slice_x, slice_y = Point.box_slice(
+    #         min_pt,
+    #         max_pt,
+    #         margin_x_min=margin_x_min,
+    #         margin_y_min=margin_y_min,
+    #         margin_x_max=margin_x_max,
+    #         margin_y_max=margin_y_max,
+    #     )
+    #     # vector has inverted x y
+    #     return vector[slice_y, slice_x]
 
 
 def parse_image(path: Path):

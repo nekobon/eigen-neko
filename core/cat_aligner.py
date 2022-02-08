@@ -1,4 +1,7 @@
 from core.utils import Path, AnnotatedImage, Point
+from ipdb.__main__ import main
+import functools
+from core.utils import Path, AnnotatedImage
 import typing as tp
 import itertools
 from core import utils
@@ -6,6 +9,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 from numpy import linalg
 from PIL import Image, ImageOps
+from PIL import Image
+import itertools
 
 
 def show_image(path: Path):
@@ -29,9 +34,34 @@ def _show_cat_and_points(cat: AnnotatedImage) -> None:
     plt.imshow(cat_img)
 
 
-def truncate(
+def stack_images(images: tp.Sequence["Image"]):
+    """assumes all same size"""
+    w, h = images[0].size
+    rt = np.sqrt(len(images))
+    n_col = int(rt)
+    n_row = int(n_col + int((rt - n_col) > 0))
+
+    new_img = Image.new("RGB", (n_col * w, n_row * h))
+
+    x_offset = 0
+    y_offset = 0
+    for i, img in enumerate(images):
+        new_img.paste(img, (x_offset, y_offset))
+
+        if (i + 1) % n_col:
+            x_offset += w
+        else:
+            x_offset = 0
+            y_offset += h
+        # print(x_offset, y_offset)
+
+    return new_img
+
+
+def truncate_by_eyes(
     img: Image,
-    eye_points: tp.List[tp.List[int]],
+    points: tp.List[tp.List[int]],
+    *,
     width: int,
     height: int,
 ) -> Image:
@@ -39,7 +69,7 @@ def truncate(
     eye_w_to_half_width = 1.3
     eye_height = 0.8  # 0 = at bototm, 1 = at middle, 2 = at top
 
-    left, right = eye_points
+    left, right = points[:2]
     mid_eye_x = (left[0] + right[0]) / 2
     mid_eye_y = (left[1] + right[1]) / 2
     eye_w = right[0] - left[0]
@@ -55,22 +85,75 @@ def truncate(
     # cropped.show()
     # return cropped
     scaled = cropped.resize((width, height))
-    scaled.show()
+    # scaled.show()
     return scaled
+
+
+def truncate_by_all_points(
+    img: Image,
+    points: tp.List[tp.List[int]],
+    *,
+    width: int,
+    height: int,
+) -> Image:
+    xs, ys = zip(*points)
+    cropped = img.crop((min(xs), min(ys), max(xs), max(ys)))
+    return cropped.resize((width, height))
 
 
 class CatAligner:
     @classmethod
-    def transform(
-        cls, test_cat: AnnotatedImage, **kwargs
-    ) -> tp.Tuple[Image.Image, tp.List[tp.List[int]]]:
-        raise NotImplementedError("Must be implemented in a subclass")
+    def align_one_image(
+        cls, cat: AnnotatedImage, width: int, height: int
+    ) -> Image.Image:
+        new_image, points = cls.transform(cat)
+        return cls.truncate(new_image, points, width=width, height=height)
+
+    @classmethod
+    def gen_aligned(
+        cls,
+        n: int,
+        *,
+        width: int,
+        height: int,
+    ) -> tp.Iterator[Image.Image]:
+        gen = utils.Paths.gen_files()
+        for i, cat in enumerate(gen):
+            if i == n:
+                return
+            print(i, cat.image)
+            yield cls.align_one_image(cat, width=width, height=height)
+
+    @classmethod
+    def gen_aligned_multiprocess(
+        cls,
+        n: int,
+        *,
+        width: int,
+        height: int,
+    ) -> tp.List[Image.Image]:
+        """multiprocess version of gen_aligned"""
+        from concurrent.futures import ProcessPoolExecutor
+
+        get_one_image = functools.partial(
+            cls.align_one_image, width=width, height=height
+        )
+
+        with ProcessPoolExecutor(max_workers=10) as executor:
+            yield from executor.map(
+                get_one_image,
+                itertools.islice(utils.Paths.gen_files(), n, None),
+            )
 
 
 class CatAlignerLSTSQ(CatAligner):
+
+    truncate = staticmethod(truncate_by_eyes)
+
     @staticmethod
     def get_standard_cat() -> AnnotatedImage:
         standard_cat_path = utils.Paths.INPUT_PATH / "CAT_00" / "00000055_003.jpg"
+        standard_cat_path = utils.Paths.INPUT_PATH / "CAT_04" / "00000949_015.jpg"
         return AnnotatedImage.from_image_path(standard_cat_path)
 
     @staticmethod
@@ -108,13 +191,8 @@ class CatAlignerLSTSQ(CatAligner):
         """we want to make the image smaller to avoid gaps in pixels"""
         w_ratio = src_w / new_w
         h_ratio = src_h / new_h
-        print(f"{src_w=}")
-        print(f"{new_w=}")
-        print(f"{src_h=}")
-        print(f"{new_h=}")
-        print(f"{min(1, w_ratio, h_ratio)=}")
 
-        return min(1, w_ratio, h_ratio) * 0.6
+        return min(1, w_ratio, h_ratio) * 0.5
 
     @staticmethod
     def get_new_eye_points(cat: AnnotatedImage, x: np.array, size_multiplier: float):
@@ -157,8 +235,8 @@ class CatAlignerLSTSQ(CatAligner):
         dst_x = (new_x * size_multiplier).astype(int)
         dst_y = (new_y * size_multiplier).astype(int)
 
-        eye_points = cls.get_new_eye_points(cat, x, size_multiplier)
-        final_image = np.zeros([dst_x.max() + 1, dst_y.max() + 1, 3]).astype(int) + 255
+        eye_points = cls.get_new_eye_points(test_cat, x, size_multiplier)
+        final_image = np.zeros([dst_x.max() + 1, dst_y.max() + 1, 3]).astype(int)
         final_image[dst_x, dst_y] = test_cat_image[src_x, src_y]
 
         img = Image.fromarray(final_image.astype(np.uint8))
@@ -166,9 +244,12 @@ class CatAlignerLSTSQ(CatAligner):
         return img, eye_points[:, [1, 0]].tolist()
 
 
-class CatAlignerPIL(CatAligner):
+class CatAlignerEyes(CatAligner):
+
+    truncate = staticmethod(truncate_by_eyes)
+
     @staticmethod
-    def get_eye_rot_angle_and_size(test_cat: AnnotatedImage):
+    def get_eye_rot_angle_and_size(test_cat: AnnotatedImage) -> tp.Tuple[float, float]:
         # only using eyes (1st and 2nd points)
         p = test_cat.points  # list of (x, y) points
         x = p[1][0] - p[0][0]  # y distance between two eyes
@@ -228,21 +309,48 @@ class CatAlignerCropOnly(CatAligner):
         return image, eyes
 
 
-if __name__ == "__main__":
-    gen = utils.Paths.gen_files()
-    next(gen)
-    next(gen)
-    next(gen)
-    next(gen)
-    next(gen)
-    next(gen)
-    for cat in gen:
-        new_image, eyes = CatAlignerLSTSQ.transform(cat)
-        truncate(new_image, eyes, width=100, height=100)
+class CatAlignerSimple(CatAligner):
+    truncate = staticmethod(truncate_by_all_points)
 
-        # plt.imshow(new_image)
-        # img, points = Image.fromarray(new_image.astype(np.uint8))
-        show_image(cat.image)
-        plt.show()
-        continue
+    @classmethod
+    def transform(
+        cls, test_cat: AnnotatedImage
+    ) -> tp.Tuple[Image.Image, tp.List[tp.List[int]]]:
+
+        img = Image.open(test_cat.image)
+
+        return img, test_cat.points
+
+    # plt.imshow(new_image)
+    # img, points = Image.fromarray(new_image.astype(np.uint8))
+    # show_image(cat.image)
+    # plt.show()
+    # continue
+    # img.show()
+
+
+if __name__ == "__main__":
+    n = 25  # number of cats
+    w = 100  # width
+    h = 100  # height
+
+    # aligned = list(CatAlignerEyes.gen_aligned(n, width=w, height=h))
+    # img = stack_images(aligned)
+    # img.show()
+
+    # aligned = list(CatAlignerSimple.gen_aligned(n, width=w, height=h))
+    # img = stack_images(aligned)
+    # img.show()
+
+    # aligned = list(CatAlignerLSTSQ.gen_aligned(n, width=w, height=h))
+    # img = stack_images(aligned)
+    # img.show()
+    import time
+
+    for aligner in (CatAlignerEyes, CatAlignerSimple, CatAlignerLSTSQ):
+        # for aligner in (CatAlignerSimple,):
+        i = time.time()
+        aligned = list(aligner.gen_aligned(n, width=w, height=h))
+        print(aligner, f"{time.time() - i}")
+        img = stack_images(aligned)
         img.show()
