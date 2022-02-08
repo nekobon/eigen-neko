@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from copy import deepcopy
-from itertools import count
 import json
 import typing as tp
+from copy import deepcopy
 from enum import Enum
+from itertools import count
 
 
 class Cell(tp.TypedDict, total=False):

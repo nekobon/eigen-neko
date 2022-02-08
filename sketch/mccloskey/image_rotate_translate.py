@@ -1,6 +1,6 @@
 #%%
-import typing as tp
 import math
+import typing as tp
 
 import numpy as np
 from matplotlib import pyplot as plt

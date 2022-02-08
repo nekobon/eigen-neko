@@ -1,8 +1,10 @@
 # From https://towardsdatascience.com/eigenfaces-recovering-humans-from-ghosts-17606c328184
 # %%
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
-import os
+
 
 # %%
 # """It helps visualising the portraits from the dataset."""
