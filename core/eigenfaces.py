@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from pathlib import Path
 import os
+from pathlib import Path
 
 import numpy as np
-from PIL import Image
 
-from core import utils, cat_aligner, config
+from core import cat_aligner, config, utils
 
 
 def dilate_components(arr: np.ndarray) -> np.ndarray:

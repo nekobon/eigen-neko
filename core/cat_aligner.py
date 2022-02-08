@@ -1,15 +1,14 @@
-from core.utils import Path, AnnotatedImage
 import functools
-from core.utils import Path, AnnotatedImage
-import typing as tp
 import itertools
-from core import utils
+import typing as tp
+
 import numpy as np
 from matplotlib import pyplot as plt
 from numpy import linalg
 from PIL import Image
-from PIL import Image
-import itertools
+
+from core import utils
+from core.utils import AnnotatedImage, Path
 
 
 def show_image(path: Path):
