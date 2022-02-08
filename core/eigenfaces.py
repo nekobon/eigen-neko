@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from black import out
 
 import numpy as np
+from matplotlib import pyplot as plt
 
 from core import cat_aligner, config, utils
 
-from PIL import ImageOps
+from PIL import ImageOps, Image
 
 
 def dilate_components(arr: np.ndarray) -> np.ndarray:
@@ -22,6 +24,23 @@ def dilate_components(arr: np.ndarray) -> np.ndarray:
 # Figures created through the pyplot interface (`matplotlib.pyplot.figure`) are retained until explicitly
 # closed and may consume too much memory. (To control this warning, see the rcParam `figure.max_open_warning`).
 # fig = plt.figure(figsize=(2.2 * n_col, 2.2 * n_row))
+def save_gif(*, outpath: Path, subimage_dir: Path) -> Path:
+    def key(path: Path) -> int:
+        return int(path.stem[: path.stem.find("_")])
+
+    files = sorted(subimage_dir.iterdir(), key=key)
+    img, *imgs = [Image.open(f) for f in files]
+
+    img.save(
+        fp=outpath,
+        format="GIF",
+        append_images=imgs,
+        save_all=True,
+        duration=200,
+        loop=0,
+    )
+
+    return outpath
 
 
 def main(*, aligner: cat_aligner.CatAligner, n_samples: int, out_folder: Path):
@@ -37,17 +56,20 @@ def main(*, aligner: cat_aligner.CatAligner, n_samples: int, out_folder: Path):
     X_train = np.array([np.array(im).flatten() for im in images])
     ret = utils.plot_portraits(X_train, shape, 4, 4, show=False)
     ret.savefig(out_folder / "sample_processed_images.png")
+    plt.close(ret)
 
     X_mean = X_train.mean(axis=0)
     U, S, Vt = np.linalg.svd(X_train, full_matrices=False)
 
     fig = utils.plot_principle_components(S)
     fig.savefig(out_folder / "Principle Components")
+    plt.close(fig)
 
     eigenfaces = np.array([dilate_components(arr) for arr in Vt])
     eigenface_titles = ["eigenface %d" % i for i in range(eigenfaces.shape[0])]
     ret = utils.plot_portraits(eigenfaces, shape, 4, 4, eigenface_titles)
     ret.savefig(out_folder / "eigenfaces.png")
+    plt.close(ret)
 
     def reconstruct_with_components(image: int | slice, component: int | slice):
         principle_compoents = U[image, component] * S[component]
@@ -79,6 +101,11 @@ def main(*, aligner: cat_aligner.CatAligner, n_samples: int, out_folder: Path):
         )
         out_folder.mkdir(exist_ok=True)
         fig.savefig(gif_folder / f"{n_components}_components.png")
+
+    save_gif(outpath=out_folder / "iterative_components.gif", subimage_dir=gif_folder)
+
+
+# https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html#gif
 
 
 if __name__ == "__main__":
