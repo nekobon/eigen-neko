@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import functools
 import itertools
+import math
 import typing as tp
 
 import numpy as np
@@ -272,6 +273,9 @@ class CatAlignerEyes(CatAligner):
         y = p[1][1] - p[0][1]  # x distance between two eyes
 
         # note that y counts from top to bottom
+        if x == 0:
+            return math.pi / 2 * np.sign(y), np.sqrt(x ** 2 + y ** 2)
+
         return np.arctan(y / x), np.sqrt(x ** 2 + y ** 2)
 
     @classmethod
