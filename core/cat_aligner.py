@@ -284,31 +284,6 @@ class CatAlignerEyes(CatAligner):
         return rotated, new_eye_points
 
 
-class CatAlignerCropOnly(CatAligner):
-    @staticmethod
-    def transform(
-        test_cat: AnnotatedImage,
-        output_shape=(64, 64),
-        gray=True,
-        crop=True,
-    ) -> tp.Tuple[Image.Image, tp.List[tp.List[int]]]:
-        image = Image.open(test_cat.image)
-        eyes = test_cat.points[:2]
-
-        if gray:
-            image = ImageOps.grayscale(image)
-
-        if crop:
-            min_pt, max_pt = utils.Point.to_min_max(test_cat.points)
-            image = image.crop((min_pt.x, min_pt.y, max_pt.x, max_pt.y))
-            eyes = [pt - min_pt for pt in eyes]
-
-        if output_shape:
-            image = image.resize(output_shape)
-
-        return image, eyes
-
-
 class CatAlignerSimple(CatAligner):
     truncate = staticmethod(truncate_by_all_points)
 
