@@ -170,7 +170,7 @@ class CatAlignerLSTSQ(CatAligner):
     @staticmethod
     def get_standard_cat() -> AnnotatedImage:
         standard_cat_path = utils.Paths.INPUT_PATH / "CAT_00" / "00000055_003.jpg"
-        standard_cat_path = utils.Paths.INPUT_PATH / "CAT_04" / "00000949_015.jpg"
+        # standard_cat_path = utils.Paths.INPUT_PATH / "CAT_04" / "00000949_015.jpg"
         return AnnotatedImage.from_image_path(standard_cat_path)
 
     @staticmethod
