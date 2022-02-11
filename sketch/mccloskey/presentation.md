@@ -1,3 +1,22 @@
+# Outline
+# Human Face Recognition - John/Yu
+# Cat Dataset - Yu
+## What points mean
+
+# Project Flow - Yu
+# Dataset Cleaning - Yu
+## Simple Cat Aligner
+## Eye Based Cat Aligner
+## LSTSQ Cat Aligner
+
+# PCA Decomposition - John 
+
+# Results - John
+
+# Conclusion - John
+
+
+
 # This is a big title
 ## This is my subtitle 
 - My idea
