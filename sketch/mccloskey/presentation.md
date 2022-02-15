@@ -59,5 +59,10 @@ _OUTPUTS lstsq_n10000
 - Eyes and Least Squares give much better eigenfaces
 - The number of components needed to account for all the noise stays consistent
 # Future Directions
-- Use distance from each eigenvector as labels to train a model that would then classify cats into prospective types
+- Use distance from each eigenvector as labels to train a model that would then classify cats into prospective types (to decompose our own cats)
 - Use clustering to cluster groups of cats in the first few PCA dimensions and fine commonalities
+- TODO: try not taking out the mean
+- TODO: try taking both curves together and look at them
+- TODO: 10_000 LSTSQ
+- JTODO: sideways cat
+- TODO: list sorted files
