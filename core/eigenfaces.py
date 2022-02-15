@@ -59,7 +59,7 @@ def main(*, aligner: cat_aligner.CatAligner, n_samples: int, out_folder: Path):
     plt.close(ret)
 
     X_mean = X_train.mean(axis=0)
-    U, S, Vt = np.linalg.svd(X_train, full_matrices=False)
+    U, S, Vt = np.linalg.svd(X_train - X_mean, full_matrices=False)
 
     fig = utils.plot_principle_components(S)
     fig.savefig(out_folder / "Principle Components")
