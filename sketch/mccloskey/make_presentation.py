@@ -125,7 +125,7 @@ class Notebook:
                     full_path = path / fn
                     self.add_cell_markdown(
                         [
-                            f"## {full_path.stem}\n",
+                            f"## {path.stem}: {full_path.stem}\n",
                             f'<img src="{full_path}" width="500">',
                         ],
                         slide_type=SlideType.SUBSLIDE,
@@ -180,7 +180,7 @@ class Notebook:
 
 
 if __name__ == "__main__":
-    outpath = Path("notebooks/test_nb2.ipynb")
+    outpath = Path("notebooks/john_notebook.ipynb")
     nb = Notebook()
     nb.add_markdown_cells("sketch/mccloskey/presentation.md")
     # nb.add_jupyter_cells("test_nb.ipynb")
