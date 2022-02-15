@@ -38,6 +38,13 @@ class Paths:
                         image=path, annotation=path.with_suffix(".jpg.cat")
                     )
 
+    @classmethod
+    def list_sorted_files(
+        cls,
+        input_path: PathSpecifier = INPUT_PATH,
+    ) -> tp.List[AnnotatedImage]:
+        return sorted(cls.gen_files(input_path=input_path), key=lambda x: x.image.stem)
+
 
 PathSpecifier = tp.Union[str, Path]
 
