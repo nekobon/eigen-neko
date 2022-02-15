@@ -14790,7 +14790,21 @@ div.jp-OutputPrompt {
 </div>
 </div>
 </div>
-</div><div class="fragment"><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+</div><div class="fragment">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li>We use our aligner to create one row for each file, 64x64 long in grayscale (0-255)</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></div><div class="fragment"><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -14817,11 +14831,25 @@ div.jp-OutputPrompt {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Take-mean,-do-SVD">Take mean, do SVD<a class="anchor-link" href="#Take-mean,-do-SVD">&#182;</a></h2>
+<h2 id="SVD">SVD<a class="anchor-link" href="#SVD">&#182;</a></h2>
 </div>
 </div>
 </div>
-</div><div class="fragment"><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+</div><div class="fragment">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li>We get the average image X_mean and subtract it from each image, then take SVD</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></div><div class="fragment"><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -14838,18 +14866,32 @@ div.jp-OutputPrompt {
 </div>
 </div>
 
-</div></div></section><section>
+</div></div><div class="fragment">
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Get-Eigenfaces">Get Eigenfaces<a class="anchor-link" href="#Get-Eigenfaces">&#182;</a></h2>
+<h3 id="Get-Eigenfaces">Get Eigenfaces<a class="anchor-link" href="#Get-Eigenfaces">&#182;</a></h3>
 </div>
 </div>
 </div>
-</div><div class="fragment"><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+</div></div><div class="fragment">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li>Vt is our principle components, so we expand the first 16 back into images to show </li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></div><div class="fragment"><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -14878,7 +14920,35 @@ div.jp-OutputPrompt {
 </div>
 </div>
 </div>
-</div><div class="fragment"><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+</div><div class="fragment">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li>We then reconstruct each image, using a subset of components with each</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></div><div class="fragment">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li>TODO: add more depth here</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></div><div class="fragment"><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -14887,10 +14957,10 @@ div.jp-OutputPrompt {
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span>    <span class="k">def</span> <span class="nf">reconstruct_with_components</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">slice</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">slice</span><span class="p">):</span>
-        <span class="n">principle_compoents</span> <span class="o">=</span> <span class="n">U</span><span class="p">[</span><span class="n">image</span><span class="p">,</span> <span class="n">component</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="n">component</span><span class="p">]</span>
+        <span class="n">principle_components</span> <span class="o">=</span> <span class="n">U</span><span class="p">[</span><span class="n">image</span><span class="p">,</span> <span class="n">component</span><span class="p">]</span> <span class="o">*</span> <span class="n">S</span><span class="p">[</span><span class="n">component</span><span class="p">]</span>
         <span class="n">principle_directions</span> <span class="o">=</span> <span class="n">Vt</span><span class="p">[</span><span class="n">component</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="p">(</span><span class="n">principle_compoents</span> <span class="o">@</span> <span class="n">principle_directions</span><span class="p">)</span> <span class="o">+</span> <span class="n">X_mean</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">principle_components</span> <span class="o">@</span> <span class="n">principle_directions</span><span class="p">)</span> <span class="o">+</span> <span class="n">X_mean</span>
 </pre></div>
 
      </div>
@@ -14898,6 +14968,20 @@ div.jp-OutputPrompt {
 </div>
 </div>
 
+</div></div><div class="fragment">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li>Then we construct a nice gif for percentile of principle components</li>
+</ul>
+
+</div>
+</div>
+</div>
 </div></div><div class="fragment"><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
@@ -15052,7 +15136,7 @@ div.jp-OutputPrompt {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h1 id="lstsq_n1000">lstsq_n1000<a class="anchor-link" href="#lstsq_n1000">&#182;</a></h1>
+<h1 id="lstsq_1000">lstsq_1000<a class="anchor-link" href="#lstsq_1000">&#182;</a></h1>
 </div>
 </div>
 </div>
@@ -15063,7 +15147,7 @@ div.jp-OutputPrompt {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="lstsq_n1000:-sample_processed_images">lstsq_n1000: sample_processed_images<a class="anchor-link" href="#lstsq_n1000:-sample_processed_images">&#182;</a></h2><p><img src="images/lstsq_n1000/sample_processed_images.png" width="500"></p>
+<h2 id="lstsq_1000:-sample_processed_images">lstsq_1000: sample_processed_images<a class="anchor-link" href="#lstsq_1000:-sample_processed_images">&#182;</a></h2><p><img src="images/lstsq_1000/sample_processed_images.png" width="500"></p>
 
 </div>
 </div>
@@ -15075,7 +15159,7 @@ div.jp-OutputPrompt {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="lstsq_n1000:-eigenfaces">lstsq_n1000: eigenfaces<a class="anchor-link" href="#lstsq_n1000:-eigenfaces">&#182;</a></h2><p><img src="images/lstsq_n1000/eigenfaces.png" width="500"></p>
+<h2 id="lstsq_1000:-eigenfaces">lstsq_1000: eigenfaces<a class="anchor-link" href="#lstsq_1000:-eigenfaces">&#182;</a></h2><p><img src="images/lstsq_1000/eigenfaces.png" width="500"></p>
 
 </div>
 </div>
@@ -15087,7 +15171,7 @@ div.jp-OutputPrompt {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="lstsq_n1000:-Principle-Components">lstsq_n1000: Principle Components<a class="anchor-link" href="#lstsq_n1000:-Principle-Components">&#182;</a></h2><p><img src="images/lstsq_n1000/Principle Components.png" width="500"></p>
+<h2 id="lstsq_1000:-Principle-Components">lstsq_1000: Principle Components<a class="anchor-link" href="#lstsq_1000:-Principle-Components">&#182;</a></h2><p><img src="images/lstsq_1000/Principle Components.png" width="500"></p>
 
 </div>
 </div>
@@ -15099,7 +15183,7 @@ div.jp-OutputPrompt {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="lstsq_n1000:-iterative_components">lstsq_n1000: iterative_components<a class="anchor-link" href="#lstsq_n1000:-iterative_components">&#182;</a></h2><p><img src="images/lstsq_n1000/iterative_components.gif" width="500"></p>
+<h2 id="lstsq_1000:-iterative_components">lstsq_1000: iterative_components<a class="anchor-link" href="#lstsq_1000:-iterative_components">&#182;</a></h2><p><img src="images/lstsq_1000/iterative_components.gif" width="500"></p>
 
 </div>
 </div>
@@ -15174,7 +15258,88 @@ div.jp-OutputPrompt {
 </div>
 </div>
 </div>
-</div></section></section>
+</div><div class="fragment">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li>Simple works decently</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></div><div class="fragment">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li>Eyes and Least Squares give much better eigenfaces</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></div><div class="fragment">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li>The number of components needed to account for all the noise stays consistent</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></div></section></section><section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h1 id="Future-Directions">Future Directions<a class="anchor-link" href="#Future-Directions">&#182;</a></h1>
+</div>
+</div>
+</div>
+</div><div class="fragment">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li>Use distance from each eigenvector as labels to train a model that would then classify cats into prospective types</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></div><div class="fragment">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<ul>
+<li>Use clustering to cluster groups of cats in the first few PCA dimensions and fine commonalities</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div></div></section></section>
 </div>
 </div>
 </body>
