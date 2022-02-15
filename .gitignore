@@ -3,5 +3,4 @@
 .vscode/
 *.pyc
 config.py
-*.png
-*.gif
+*checkpoint.ipynb
