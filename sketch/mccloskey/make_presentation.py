@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import json
 from pathlib import Path
 import typing as tp
@@ -74,7 +75,7 @@ class Notebook:
         return self._dict["cells"]
 
     def add_cell_markdown(
-        self, *, source: list[str], slide_type: SlideType = SlideType.FRAGMENT
+        self, source: list[str], *, slide_type: SlideType = SlideType.FRAGMENT
     ):
         cell = Cell(
             cell_type=CellType.MARKDOWN.value,
@@ -85,7 +86,7 @@ class Notebook:
         self.cells.append(cell)
 
     def add_cell_code(
-        self, *, source: list[str], slide_type: SlideType = SlideType.FRAGMENT
+        self, source: list[str], *, slide_type: SlideType = SlideType.FRAGMENT
     ):
         cell = Cell(
             cell_type=CellType.CODE.value,
@@ -124,6 +125,25 @@ class Notebook:
                 code_block.append(f"{line}\n")
                 continue
 
+            if flag == "_OUTPUTS":
+                path = Path("images", line[len("_OUTPUTS ") :])
+
+                self.add_cell_markdown(f"# {path.stem}", slide_type=SlideType.SLIDE)
+                for fn in [
+                    "sample_processed_images.png",
+                    "eigenfaces.png",
+                    "Principle Components.png",
+                    "iterative_components.gif",
+                ]:
+                    full_path = path / fn
+                    self.add_cell_markdown(
+                        [
+                            f"## {full_path.stem}\n",
+                            f'<img src="{full_path}" width="500">',
+                        ],
+                        slide_type=SlideType.SUBSLIDE,
+                    )
+                continue
             if flag == "#":
                 slide_type = SlideType.SLIDE
             elif flag == "##":
@@ -149,7 +169,7 @@ class Notebook:
 
 
 if __name__ == "__main__":
-    outpath = Path("test_nb2.ipynb")
+    outpath = Path("notebooks/test_nb2.ipynb")
     nb = Notebook()
     nb.add_markdown_cells("sketch/mccloskey/presentation.md")
     nb.add_jupyter_cells("test_nb.ipynb")

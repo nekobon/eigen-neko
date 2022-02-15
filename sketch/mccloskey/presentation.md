@@ -1,4 +1,5 @@
 # Outline
+![my image](images/00000100_014.jpg)
 # Human Face Recognition - John/Yu
 # Cat Dataset - Yu
 ## What points mean
@@ -9,6 +10,10 @@
 ## LSTSQ Cat Aligner
 # PCA Decomposition - John 
 # Results - John
+_OUTPUTS simple_n10000
+_OUTPUTS eyes_n10000
+_OUTPUTS lstsq_n1000
+_OUTPUTS lstsq_n10000
 # Conclusion - John
 # This is a big title
 ## This is my subtitle 
