@@ -31,20 +31,7 @@ class SlideType(str, Enum):
 
 class Notebook:
     BASE_NOTEBOOK = {
-        "cells": [
-            {
-                "cell_type": "markdown",
-                "id": "overall-anatomy",
-                "metadata": {},
-                "source": ["my markdown 1"],
-            },
-            {
-                "cell_type": "markdown",
-                "id": "russian-confusion",
-                "metadata": {},
-                "source": ["my markdown 2"],
-            },
-        ],
+        "cells": [],
         "metadata": {
             "celltoolbar": "Slideshow",
             "kernelspec": {
@@ -151,7 +138,7 @@ class Notebook:
             else:
                 slide_type = SlideType.FRAGMENT
 
-            self.add_cell_markdown(source=line, slide_type=slide_type)
+            self.add_cell_markdown(source=[line], slide_type=slide_type)
 
     def add_markdown_cells(self, fp) -> None:
         with open(fp) as f:
@@ -167,12 +154,37 @@ class Notebook:
         self.cells.extend(nb_json["cells"])
         return nb
 
+    def postprocess_outline(self, outline_index=1):
+        # MUTATES SELF
+        nums = count(1)
+        outline = ["# Outline\n"]
+        for cell in self.cells[1:]:
+            if "slideshow" not in cell["metadata"]:
+                print(f"WARNING: No slideshow in {cell}")
+                continue
+            if cell["metadata"]["slideshow"]["slide_type"] == SlideType.SLIDE:
+                if not isinstance(cell["source"], list):
+                    cell["source"] = [cell["source"]]
+                title = cell["source"][0][2:]
+                outline_num = next(nums)
+                new_title = f"{outline_num}. {title}"
+                outline.append(f"{outline_num}. {title}\n")
+                cell["source"][0] = f"# {new_title}"
+        outline_cell = Cell(
+            cell_type=CellType.MARKDOWN.value,
+            id=next(self._id_gen),
+            metadata={"slideshow": {"slide_type": SlideType.SLIDE.value}},
+            source=outline,
+        )
+        self.cells.insert(outline_index, outline_cell)
+
 
 if __name__ == "__main__":
     outpath = Path("notebooks/test_nb2.ipynb")
     nb = Notebook()
     nb.add_markdown_cells("sketch/mccloskey/presentation.md")
-    nb.add_jupyter_cells("test_nb.ipynb")
+    # nb.add_jupyter_cells("test_nb.ipynb")
+    # nb.postprocess_outline(3)
     print(nb.save(outpath))
     print(
         f"jupyter nbconvert {outpath} --to slides; firefox {outpath.with_suffix('.slides.html')}"
