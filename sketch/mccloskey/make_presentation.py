@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 import typing as tp
 from copy import deepcopy
 from enum import Enum
@@ -110,7 +111,6 @@ class Notebook:
             flag = line[: line.find(" ")] if " " in line else line
 
             if flag == "CODE":
-                breakpoint()
                 code = True
                 continue
 
@@ -121,10 +121,17 @@ class Notebook:
                 continue
 
             if code:
-                code_block.append(line)
+                code_block.append(f"{line}\n")
                 continue
 
-            self.add_cell_markdown(source=line)
+            if flag == "#":
+                slide_type = SlideType.SLIDE
+            elif flag == "##":
+                slide_type = SlideType.SUBSLIDE
+            else:
+                slide_type = SlideType.FRAGMENT
+
+            self.add_cell_markdown(source=line, slide_type=slide_type)
 
     def add_markdown_cells(self, fp) -> None:
         with open(fp) as f:
@@ -142,7 +149,11 @@ class Notebook:
 
 
 if __name__ == "__main__":
+    outpath = Path("test_nb2.ipynb")
     nb = Notebook()
     nb.add_markdown_cells("sketch/mccloskey/presentation.md")
     nb.add_jupyter_cells("test_nb.ipynb")
-    print(nb.save("test_nb2.ipynb"))
+    print(nb.save(outpath))
+    print(
+        f"jupyter nbconvert {outpath} --to slides; firefox {outpath.with_suffix('.slides.html')}"
+    )
