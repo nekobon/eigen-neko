@@ -46,6 +46,6 @@ END
 # Results - John
 _OUTPUTS simple
 _OUTPUTS eyes
-_OUTPUTS lstsq_n1000
+_OUTPUTS lstsq_1000
 _OUTPUTS lstsq_n10000
 # Conclusion - John
