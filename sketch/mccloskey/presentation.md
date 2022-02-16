@@ -26,6 +26,8 @@ CODE
     X_mean = X_train.mean(axis=0)
     U, S, Vt = np.linalg.svd(X_train - X_mean, full_matrices=False)
 END
+- Note: U.shape = (9997, 4096). 9997 images, 4096 pixels each.
+-       Vt.Shape = (4096, 4096). Only 4096 principle components
 ### Get Eigenfaces
 - Vt is our principle components, so we expand the first 16 back into images to show 
 CODE 
@@ -50,6 +52,7 @@ CODE
         fig = utils.plot_portraits(...)
 END
 # Results - John
+_OUTPUTS test
 _OUTPUTS simple
 _OUTPUTS eyes
 _OUTPUTS lstsq_1000
