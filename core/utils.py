@@ -139,7 +139,7 @@ def plot_image(
 
 
 def plot_portraits(
-    images, shape, n_row, n_col, titles=None, suptitle=None, show=True
+    images, shape, n_row, n_col, titles=None, suptitle=None, show=False
 ) -> figure.Figure:
     titles = [""] * n_row * n_col if titles is None else titles
     fig = plt.figure(figsize=(2.2 * n_col, 2.2 * n_row))
@@ -151,6 +151,7 @@ def plot_portraits(
         plt.suptitle(suptitle)
     if show:
         plt.show()
+    plt.close(fig)
 
     return fig
 
@@ -177,4 +178,6 @@ def plot_principle_components(S: np.ndarray) -> figure.Figure:
     plt.hlines(y=vline_y, xmin=0, xmax=vline_x, colors="teal", ls="--", lw=2)
     plt.legend(bbox_to_anchor=(1, -0.15))
 
-    return plt.gcf()
+    fig = plt.gcf()
+    plt.close(fig)
+    return fig

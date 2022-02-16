@@ -47,14 +47,14 @@ def main(*, aligner: cat_aligner.CatAligner, n_samples: int, out_folder: Path):
     out_folder.mkdir(parents=True, exist_ok=True)
     print(f"Outputting to {out_folder}")
 
-    all_files = list(utils.Paths.gen_files())
+    all_files = utils.Paths.list_sorted_files()
     files = all_files[:n_samples]
+    names = [f.image.stem[4:] for f in files]
     images = [ImageOps.grayscale(aligner.align_one_image(f, 64, 64)) for f in files]
-    names = [f.image.stem for f in files]
     shape = np.array(images[0]).shape
 
     X_train = np.array([np.array(im).flatten() for im in images])
-    ret = utils.plot_portraits(X_train, shape, 4, 4, show=False)
+    ret = utils.plot_portraits(X_train, shape, 4, 8, titles=names)
     ret.savefig(out_folder / "sample_processed_images.png")
     plt.close(ret)
 
@@ -66,12 +66,14 @@ def main(*, aligner: cat_aligner.CatAligner, n_samples: int, out_folder: Path):
     plt.close(fig)
 
     eigenfaces = np.array([dilate_components(arr) for arr in Vt])
-    eigenface_titles = ["eigenface %d" % i for i in range(eigenfaces.shape[0])]
-    ret = utils.plot_portraits(eigenfaces, shape, 4, 4, eigenface_titles)
+    eigenface_titles = [f"eigenface {i}" for i in range(eigenfaces.shape[0])]
+    ret = utils.plot_portraits(eigenfaces, shape, 4, 8, eigenface_titles)
     ret.savefig(out_folder / "eigenfaces.png")
     plt.close(ret)
 
-    def reconstruct_with_components(image: int | slice, component: int | slice):
+    def reconstruct_with_components(
+        image: int | slice | list[int], component: int | slice
+    ):
         principle_compoents = U[image, component] * S[component]
         principle_directions = Vt[component]
 
@@ -89,15 +91,10 @@ def main(*, aligner: cat_aligner.CatAligner, n_samples: int, out_folder: Path):
             percentiles.append(idx)
 
     for n_components in percentiles:
-        X_final = reconstruct_with_components(slice(10, 30), slice(n_components))
+
+        X_final = reconstruct_with_components(slice(32), slice(n_components))
         fig = utils.plot_portraits(
-            X_final,
-            shape,
-            4,
-            4,
-            titles=[f"Cat {x}" for x in range(1, 17)],
-            suptitle=f"{n_components} Components",
-            show=False,
+            X_final, shape, 4, 8, titles=names, suptitle=f"{n_components} Components"
         )
         out_folder.mkdir(exist_ok=True)
         fig.savefig(gif_folder / f"{n_components}_components.png")
