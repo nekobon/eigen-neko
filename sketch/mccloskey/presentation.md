@@ -52,11 +52,10 @@ CODE
         fig = utils.plot_portraits(...)
 END
 # Results - John
-_OUTPUTS test
 _OUTPUTS simple
 _OUTPUTS eyes
 _OUTPUTS lstsq_1000
-_OUTPUTS lstsq_n10000
+_OUTPUTS lstsq
 # Conclusion - John
 - Simple works decently
 - Eyes and Least Squares give much better eigenfaces
