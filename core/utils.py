@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from tracemalloc import start
 import typing as tp
 from pathlib import Path
 
@@ -42,8 +43,11 @@ class Paths:
     def list_sorted_files(
         cls,
         input_path: PathSpecifier = INPUT_PATH,
+        start_ind: int = 0,
     ) -> tp.List[AnnotatedImage]:
-        return sorted(cls.gen_files(input_path=input_path), key=lambda x: x.image.stem)
+        return sorted(cls.gen_files(input_path=input_path), key=lambda x: x.image.stem)[
+            start_ind:
+        ]
 
 
 PathSpecifier = tp.Union[str, Path]

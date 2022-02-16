@@ -1,4 +1,5 @@
 from __future__ import annotations
+import os
 
 import functools
 import itertools
@@ -33,6 +34,19 @@ def _show_cat_and_points(cat: AnnotatedImage) -> None:
         ]
 
     plt.imshow(cat_img)
+
+
+def gen_annotated_image():
+    yield from utils.Paths.list_sorted_files(start_ind=280)
+
+    input_path = utils.Paths.INPUT_PATH / "sample"
+    for dirname, _, filenames in os.walk(input_path):
+        for filename in filenames:
+            path = Path(dirname, filename)
+            if path.suffix == ".jpg":
+                yield AnnotatedImage.from_paths(
+                    image=path, annotation=path.with_suffix(".jpg.cat")
+                )
 
 
 def stack_images(images: tp.Sequence[Image.Image]):
@@ -134,7 +148,7 @@ class CatAligner:
         width: int,
         height: int,
     ) -> tp.Iterator[Image.Image]:
-        gen = utils.Paths.gen_files()
+        gen = gen_annotated_image()
         for i, cat in enumerate(gen):
             if i == n:
                 return
@@ -159,7 +173,7 @@ class CatAligner:
         with ProcessPoolExecutor(max_workers=10) as executor:
             yield from executor.map(
                 get_one_image,
-                itertools.islice(utils.Paths.gen_files(), n, None),
+                itertools.islice(gen_annotated_image(), n, None),
             )
 
 
@@ -272,11 +286,14 @@ class CatAlignerEyes(CatAligner):
         x = p[1][0] - p[0][0]  # y distance between two eyes
         y = p[1][1] - p[0][1]  # x distance between two eyes
 
+        eye_distance = np.sqrt(x ** 2 + y ** 2)
         # note that y counts from top to bottom
         if x == 0:
-            return math.pi / 2 * np.sign(y), np.sqrt(x ** 2 + y ** 2)
+            angle = math.pi / 2 * np.sign(y)
+        else:
+            angle = np.arctan(y / x)
 
-        return np.arctan(y / x), np.sqrt(x ** 2 + y ** 2)
+        return angle, eye_distance
 
     @classmethod
     def transform(
@@ -325,7 +342,8 @@ class CatAlignerSimple(CatAligner):
 
 
 if __name__ == "__main__":
-    n = 25  # number of cats
+    # n = 25  # number of cats
+    n = 64
     w = 100  # width
     h = 100  # height
 
@@ -342,7 +360,7 @@ if __name__ == "__main__":
     # img.show()
     import time
 
-    for aligner in (CatAlignerEyes, CatAlignerSimple, CatAlignerLSTSQ):
+    for aligner in (CatAlignerSimple, CatAlignerEyes, CatAlignerLSTSQ):
         # for aligner in (CatAlignerSimple,):
         i = time.time()
         aligned = list(aligner.gen_aligned(n, width=w, height=h))
