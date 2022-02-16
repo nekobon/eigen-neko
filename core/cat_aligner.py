@@ -37,7 +37,7 @@ def _show_cat_and_points(cat: AnnotatedImage) -> None:
 
 
 def gen_annotated_image():
-    yield from utils.Paths.list_sorted_files(start_ind=280)
+    yield from utils.Paths.list_sorted_files(start_ind=301)
 
     input_path = utils.Paths.INPUT_PATH / "sample"
     for dirname, _, filenames in os.walk(input_path):
@@ -343,7 +343,7 @@ class CatAlignerSimple(CatAligner):
 
 if __name__ == "__main__":
     # n = 25  # number of cats
-    n = 64
+    n = 32
     w = 100  # width
     h = 100  # height
 
