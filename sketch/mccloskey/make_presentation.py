@@ -131,6 +131,13 @@ class Notebook:
                         slide_type=SlideType.SUBSLIDE,
                     )
                 continue
+            if flag == "NOTEBOOK_SUBSLIDE":
+                path = Path(line[len("NOTEBOOK_SUBSLIDE ") :])
+                self.add_jupyter_cells(path, slide_type=SlideType.SUBSLIDE)
+                continue
+            if flag == "NOTEBOOK":
+                path = Path(line[len("NOTEBOOK ") :])
+                self.add_jupyter_cells(path)
             if flag == "#":
                 slide_type = SlideType.SLIDE
             elif flag == "##":
@@ -145,16 +152,19 @@ class Notebook:
             lines = f.readlines()
 
         self.add_lines(lines)
-        return nb
 
     def add_jupyter_cells(self, fp, slide_type=None) -> None:
         with open(fp) as f:
             nb_json = json.load(f)
-        if not slide_type:
-            cells = nb_json["cells"]
 
-        self.cells.extend(nb_json["cells"])
-        return nb
+        cells = nb_json["cells"]
+        if slide_type:
+            for c in nb_json["cells"]:
+                if "slideshow" not in c["metadata"]:
+                    c["metadata"]["slideshow"] = {}
+                c["metadata"]["slideshow"]["slide_type"] = slide_type
+
+        self.cells.extend(cells)
 
     def postprocess_outline(self, outline_index=1):
         # MUTATES SELF
@@ -184,7 +194,6 @@ class Notebook:
 if __name__ == "__main__":
     outpath = Path("notebooks/john_notebook.ipynb")
     nb = Notebook()
-    nb.add_jupyter_cells("core/presentation_notebook.ipynb")
     nb.add_markdown_cells("sketch/mccloskey/presentation.md")
     # nb.postprocess_outline(3)
     print(nb.save(outpath))
