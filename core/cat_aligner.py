@@ -52,9 +52,9 @@ def gen_annotated_image():
 def stack_images(images: tp.Sequence[Image.Image]):
     """assumes all same size"""
     w, h = images[0].size
-    rt = np.sqrt(len(images))
+    rt = np.sqrt(len(images)) + 1
     n_col = int(rt)
-    n_row = int(n_col + int((rt - n_col) > 0))
+    n_row = int(len(images) // n_col)  # + int((rt - n_col) > 0))
 
     new_img = Image.new("RGB", (n_col * w, n_row * h))
 
@@ -152,7 +152,7 @@ class CatAligner:
         for i, cat in enumerate(gen):
             if i == n:
                 return
-            print(i, cat.image)
+            # print(i, cat.image)
             yield cls.align_one_image(cat, width=width, height=height)
 
     @classmethod
