@@ -13,9 +13,21 @@ NOTEBOOK notebooks/yu_notebook.ipynb
 NOTEBOOK_SUBSLIDE notebooks/john_notebook.ipynb
 # Results
 _OUTPUTS simple_100
+## ![my image](images/simple_100/gif_subimages/1_components.png)
+## ![my image](images/simple_100/gif_subimages/2_components.png)
+## ![my image](images/simple_100/gif_subimages/3_components.png)
 _OUTPUTS simple
+## ![my image](images/simple/gif_subimages/1_components.png)
+## ![my image](images/simple/gif_subimages/3_components.png)
+## ![my image](images/simple/gif_subimages/5_components.png)
 _OUTPUTS eyes
+## ![my image](images/eyes/gif_subimages/1_components.png)
+## ![my image](images/eyes/gif_subimages/2_components.png)
+## ![my image](images/eyes/gif_subimages/4_components.png)
 _OUTPUTS lstsq
+## ![my image](images/lstsq/gif_subimages/1_components.png)
+## ![my image](images/lstsq/gif_subimages/3_components.png)
+## ![my image](images/lstsq/gif_subimages/5_components.png)
 # Conclusion
 - Simple works decently
 - Eyes and Least Squares give much better eigenfaces
