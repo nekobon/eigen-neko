@@ -2,14 +2,21 @@
 Yu Tomita and John McCloskey
 ![my image](images/00000100_014.jpg)
 # Outline
-# PCA Decomposition
-NOTEBOOK_SUBSLIDE sketch/mccloskey/presentation_notebook.ipynb
-# Results - John
+- Cat Dataset Overview
+- Program Flow
+- Data Cleaning (Cat Aligners)
+- Singular Value Decomposition
+- Results
+- Conclusion / Future Directions
+NOTEBOOK notebooks/yu_notebook.ipynb
+# Singular Value Decomposition
+NOTEBOOK_SUBSLIDE notebooks/john_notebook.ipynb
+# Results
+_OUTPUTS simple_100
 _OUTPUTS simple
 _OUTPUTS eyes
-_OUTPUTS lstsq_1000
 _OUTPUTS lstsq
-# Conclusion - John
+# Conclusion
 - Simple works decently
 - Eyes and Least Squares give much better eigenfaces
 - The number of components needed to account for all the noise stays consistent

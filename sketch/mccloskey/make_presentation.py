@@ -138,6 +138,7 @@ class Notebook:
             if flag == "NOTEBOOK":
                 path = Path(line[len("NOTEBOOK ") :])
                 self.add_jupyter_cells(path)
+                continue
             if flag == "#":
                 slide_type = SlideType.SLIDE
             elif flag == "##":
@@ -192,7 +193,7 @@ class Notebook:
 
 
 if __name__ == "__main__":
-    outpath = Path("notebooks/john_notebook.ipynb")
+    outpath = Path("notebooks/final_notebook.ipynb")
     nb = Notebook()
     nb.add_markdown_cells("sketch/mccloskey/presentation.md")
     # nb.postprocess_outline(3)
