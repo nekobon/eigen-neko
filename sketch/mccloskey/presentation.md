@@ -1,13 +1,3 @@
-# Cat Presentation
-Yu Tomita and John McCloskey
-![my image](images/00000100_014.jpg)
-# Outline
-- Cat Dataset Overview
-- Program Flow
-- Data Cleaning (Cat Aligners)
-- Singular Value Decomposition
-- Results
-- Conclusion / Future Directions
 NOTEBOOK notebooks/yu_notebook.ipynb
 # Singular Value Decomposition
 NOTEBOOK_SUBSLIDE notebooks/john_notebook.ipynb
