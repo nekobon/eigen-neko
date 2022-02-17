@@ -152,7 +152,7 @@ class CatAligner:
         for i, cat in enumerate(gen):
             if i == n:
                 return
-            print(i, cat.image)
+            # print(i, cat.image)
             yield cls.align_one_image(cat, width=width, height=height)
 
     @classmethod
