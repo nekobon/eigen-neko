@@ -126,7 +126,7 @@ class Notebook:
                     self.add_cell_markdown(
                         [
                             f"## {path.stem}: {full_path.stem}\n",
-                            f'<img src="{full_path}" width="500">',
+                            f"""<center><img src="{full_path}"></center>\n""",
                         ],
                         slide_type=SlideType.SUBSLIDE,
                     )
@@ -147,9 +147,11 @@ class Notebook:
         self.add_lines(lines)
         return nb
 
-    def add_jupyter_cells(self, fp) -> None:
+    def add_jupyter_cells(self, fp, slide_type=None) -> None:
         with open(fp) as f:
             nb_json = json.load(f)
+        if not slide_type:
+            cells = nb_json["cells"]
 
         self.cells.extend(nb_json["cells"])
         return nb
@@ -182,8 +184,8 @@ class Notebook:
 if __name__ == "__main__":
     outpath = Path("notebooks/john_notebook.ipynb")
     nb = Notebook()
+    nb.add_jupyter_cells("core/presentation_notebook.ipynb")
     nb.add_markdown_cells("sketch/mccloskey/presentation.md")
-    # nb.add_jupyter_cells("test_nb.ipynb")
     # nb.postprocess_outline(3)
     print(nb.save(outpath))
     print(

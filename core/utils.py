@@ -135,15 +135,19 @@ def plot_image(
     title="",
 ):
     axis = plt if axis is None else axis
+    if image_arr.dtype == np.dtype("uint8"):
+        vmax = 255
+    else:
+        vmax = 1
 
-    axis.imshow(image_arr.reshape(shape), cmap="gray")
+    axis.imshow(image_arr.reshape(shape), cmap="gray", vmin=0, vmax=vmax)
     plt.title(title)
     plt.xticks(())
     plt.yticks(())
 
 
 def plot_portraits(
-    images, shape, n_row, n_col, titles=None, suptitle=None, show=True
+    images, shape, n_row, n_col, titles=None, suptitle=None, show=False, colorbar=False
 ) -> figure.Figure:
     titles = [""] * n_row * n_col if titles is None else titles
     fig = plt.figure(figsize=(2.2 * n_col, 2.2 * n_row))
@@ -153,8 +157,12 @@ def plot_portraits(
         plot_image(images[i], shape, axis, titles[i])
     if suptitle:
         plt.suptitle(suptitle)
+    if colorbar:
+        plt.subplots_adjust(right=0.8)
+        fig.colorbar()
     if show:
         plt.show()
+    plt.close(fig)
 
     return fig
 
@@ -181,4 +189,6 @@ def plot_principle_components(S: np.ndarray) -> figure.Figure:
     plt.hlines(y=vline_y, xmin=0, xmax=vline_x, colors="teal", ls="--", lw=2)
     plt.legend(bbox_to_anchor=(1, -0.15))
 
-    return plt.gcf()
+    fig = plt.gcf()
+    plt.close(fig)
+    return fig
