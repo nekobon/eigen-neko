@@ -129,37 +129,47 @@ def parse_image(path: Path):
 
 
 def plot_image(
-    image_arr,
-    shape,
-    axis: plt.Axes = None,
-    title="",
+    image_arr, shape, axis: plt.Axes = None, title="", vmax=None, vmin=None, cmap=None
 ):
-    axis = plt if axis is None else axis
-    if image_arr.dtype == np.dtype("uint8"):
-        vmax = 255
-    else:
-        vmax = 1
+    axis = axis or plt
+    cmap = cmap or "gray"
 
-    axis.imshow(image_arr.reshape(shape), cmap="gray", vmin=0, vmax=vmax)
+    img = axis.imshow(image_arr.reshape(shape), cmap=cmap, vmin=vmin, vmax=vmax)
     plt.title(title)
     plt.xticks(())
     plt.yticks(())
+    return img
 
 
 def plot_portraits(
-    images, shape, n_row, n_col, titles=None, suptitle=None, show=False, colorbar=False
+    images,
+    shape,
+    n_row,
+    n_col,
+    titles=None,
+    suptitle=None,
+    show=False,
+    colorbar=False,
+    vmax=None,
+    vmin=None,
+    cmap=None,
 ) -> figure.Figure:
     titles = [""] * n_row * n_col if titles is None else titles
     fig = plt.figure(figsize=(2.2 * n_col, 2.2 * n_row))
     plt.subplots_adjust(bottom=0, left=0.01, right=0.99, top=0.90, hspace=0.20)
     for i in range(n_row * n_col):
         axis = plt.subplot(n_row, n_col, i + 1)
-        plot_image(images[i], shape, axis, titles[i])
+        img = plot_image(
+            images[i], shape, axis, titles[i], cmap=cmap, vmax=vmax, vmin=vmin
+        )
     if suptitle:
         plt.suptitle(suptitle)
     if colorbar:
+        assert vmax is not None, vmax
+        assert vmin is not None, vmin
         plt.subplots_adjust(right=0.8)
-        fig.colorbar()
+        cb_axes = plt.axes([0.85, 0.1, 0.075, 0.8])
+        fig.colorbar(img, cax=cb_axes)
     if show:
         plt.show()
     plt.close(fig)
